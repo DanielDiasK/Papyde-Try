@@ -39,11 +39,11 @@ const SearchModal = React.memo(({ open, onClose, documents, sidebarItems, onSele
         return () => window.removeEventListener('keydown', handler);
     }, [onClose]);
 
-    if (!open) return null;
-
-    // Build searchable list: folders and docs
-    const folderItems = sidebarItems.filter(i => i.type === 'folder');
-    const docItems = sidebarItems.filter(i => i.type === 'document');
+    // Split items into categories - memoized
+    const { folderItems, docItems } = React.useMemo(() => ({
+        folderItems: sidebarItems.filter(i => i.type === 'folder'),
+        docItems: sidebarItems.filter(i => i.type === 'document')
+    }), [sidebarItems]);
 
     const getDocTitle = (docId?: string) => {
         if (!docId) return 'Sem título';
@@ -57,20 +57,24 @@ const SearchModal = React.memo(({ open, onClose, documents, sidebarItems, onSele
         return folder?.name || null;
     };
 
-    // Filter results
+    // Filter results - memoized
     const q = query.toLowerCase().trim();
-    const filteredFolders = q
-        ? folderItems.filter(f => f.name.toLowerCase().includes(q))
-        : [];
-    const filteredDocs = q
-        ? docItems.filter(d => {
+
+    const filteredFolders = React.useMemo(() => {
+        if (!q) return [];
+        return folderItems.filter(f => f.name.toLowerCase().includes(q));
+    }, [q, folderItems]);
+
+    const filteredDocs = React.useMemo(() => {
+        if (!q) return [];
+        return docItems.filter(d => {
             const doc = documents.find(x => x.id === d.docId);
             return doc && (
                 (doc.title || '').toLowerCase().includes(q) ||
                 (doc.content || '').toLowerCase().includes(q)
             );
-        })
-        : [];
+        });
+    }, [q, docItems, documents]);
 
     const hasResults = filteredFolders.length > 0 || filteredDocs.length > 0;
 
@@ -93,7 +97,7 @@ const SearchModal = React.memo(({ open, onClose, documents, sidebarItems, onSele
         <>
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-50 animate-in fade-in duration-150"
+                className="fixed inset-0 bg-black/40 z-50 animate-in fade-in duration-150"
                 onClick={onClose}
             />
 

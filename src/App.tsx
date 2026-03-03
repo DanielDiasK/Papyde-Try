@@ -474,33 +474,37 @@ export default function App() {
     return (
         <div className="flex flex-col h-screen w-full bg-[#FFFFFF] text-[#37352F] overflow-hidden font-sans selection:bg-[#2383E2]/30">
             <TitleBar />
-            <SearchModal
-                open={searchOpen}
-                onClose={() => setSearchOpen(false)}
-                documents={documents}
-                sidebarItems={sidebarItems}
-                onSelectDoc={(docId) => {
-                    const doc = documents.find(d => d.id === docId);
-                    if (doc) setActiveDoc(doc);
-                }}
-                onCreateDoc={createNewDocument}
-                onCreateFolder={createNewFolder}
-            />
-            <SettingsModal
-                open={settingsOpen}
-                onClose={() => setSettingsOpen(false)}
-                settings={appSettings}
-                workspacePath={workspaceConfig?.path ?? ''}
-                workspaceName={workspaceConfig?.name ?? ''}
-                onSave={(s) => {
-                    setAppSettings(s);
-                    applyTheme(s.theme);
-                    window.electronAPI?.saveSettings(s);
-                }}
-                onWorkspaceChange={(cfg) => {
-                    setWorkspaceConfig(cfg);
-                }}
-            />
+            {searchOpen && (
+                <SearchModal
+                    open={searchOpen}
+                    onClose={() => setSearchOpen(false)}
+                    documents={documents}
+                    sidebarItems={sidebarItems}
+                    onSelectDoc={(docId) => {
+                        const doc = documents.find(d => d.id === docId);
+                        if (doc) setActiveDoc(doc);
+                    }}
+                    onCreateDoc={createNewDocument}
+                    onCreateFolder={createNewFolder}
+                />
+            )}
+            {settingsOpen && (
+                <SettingsModal
+                    open={settingsOpen}
+                    onClose={() => setSettingsOpen(false)}
+                    settings={appSettings}
+                    workspacePath={workspaceConfig?.path ?? ''}
+                    workspaceName={workspaceConfig?.name ?? ''}
+                    onSave={(s) => {
+                        setAppSettings(s);
+                        applyTheme(s.theme);
+                        window.electronAPI?.saveSettings(s);
+                    }}
+                    onWorkspaceChange={(cfg) => {
+                        setWorkspaceConfig(cfg);
+                    }}
+                />
+            )}
             <div className="flex flex-1 overflow-hidden">
 
                 {/* Sidebar */}

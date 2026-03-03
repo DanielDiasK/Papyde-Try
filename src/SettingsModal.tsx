@@ -145,7 +145,7 @@ const SettingsModal = React.memo(({ open, onClose, settings, workspacePath, work
 
     return (
         <>
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-50 animate-in fade-in duration-150" onClick={onClose} />
+            <div className="fixed inset-0 bg-black/50 z-50 animate-in fade-in duration-150" onClick={onClose} />
 
             <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[760px] h-[520px] z-50 animate-in fade-in zoom-in-95 duration-200">
                 <div className="bg-white rounded-2xl shadow-[0_32px_100px_rgba(0,0,0,0.18)] border border-[#EBEBEA] overflow-hidden flex h-full">
