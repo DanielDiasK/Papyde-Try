@@ -14,6 +14,7 @@ interface WorkspaceConfig {
 
 interface ElectronAPI {
     getWorkspace: () => Promise<WorkspaceConfig | null>;
+    getAppVersion: () => Promise<string>;
     selectFolder: () => Promise<string | null>;
     createWorkspace: (name: string, folder: string) => Promise<WorkspaceConfig | null>;
     getDocuments: () => Promise<DocumentItem[]>;

@@ -39,6 +39,11 @@ const SettingsModal = React.memo(({ open, onClose, settings, workspacePath, work
     const [updateProgress, setUpdateProgress] = useState(0);
     const [updateInfo, setUpdateInfo] = useState<any>(null);
     const [updateError, setUpdateError] = useState<string | null>(null);
+    const [version, setVersion] = useState<string>('...');
+
+    useEffect(() => {
+        window.electronAPI?.getAppVersion().then(v => setVersion(v));
+    }, []);
 
     useEffect(() => {
         if (!window.electronAPI) return;
@@ -371,7 +376,7 @@ const SettingsModal = React.memo(({ open, onClose, settings, workspacePath, work
                                                 {updateStatus === 'error' && 'Ops! Algo deu errado.'}
                                             </p>
                                             <p className="text-[13px] text-[#989895]">
-                                                Versão atual: v1.0.0
+                                                Versão atual: v{version}
                                             </p>
                                         </div>
 

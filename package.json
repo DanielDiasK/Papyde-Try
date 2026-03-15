@@ -1,7 +1,7 @@
 {
   "name": "papyde",
   "productName": "Papyde",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Papyde - Your personal document workspace",
   "main": ".vite/build/main.js",
   "private": true,
@@ -13,6 +13,7 @@
     "lint": "eslint --ext .ts,.tsx .",
     "build:electron": "vite build -c vite.electron-main.config.mjs && vite build -c vite.electron-preload.config.mjs && vite build -c vite.electron-renderer.config.mjs",
     "build:win": "npm run build:electron && electron-builder --win -c electron-builder.config.js",
+    "publish:win": "npm run build:electron && electron-builder --win -p always -c electron-builder.config.js",
     "build:mac": "npm run build:electron && electron-builder --mac -c electron-builder.config.js"
   },
   "keywords": [],

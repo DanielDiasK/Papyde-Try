@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('electronAPI', {
     getWorkspace: () => ipcRenderer.invoke('get-workspace'),
+    getAppVersion: () => ipcRenderer.invoke('get-app-version'),
     selectFolder: () => ipcRenderer.invoke('select-folder'),
     createWorkspace: (name: string, folder: string) => ipcRenderer.invoke('create-workspace', { name, folder }),
     getDocuments: () => ipcRenderer.invoke('get-documents'),

@@ -11,10 +11,10 @@ if (started) {
   app.quit();
 }
 
-// Disable GPU acceleration to prevent memory read errors on some Windows machines
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('disable-software-rasterizer');
-app.disableHardwareAcceleration();
+// Enable GPU acceleration for better performance (especially animations and modals)
+// app.commandLine.appendSwitch('disable-gpu');
+// app.commandLine.appendSwitch('disable-software-rasterizer');
+// app.disableHardwareAcceleration();
 
 const configPath = path.join(app.getPath('userData'), 'app-config.json');
 let workspaceConfig: { name: string; path: string } | null = null;
@@ -97,10 +97,12 @@ app.on('ready', () => {
   }
   createWindow();
 
-  // Trigger auto update check without annoying the user too much
-  autoUpdater.checkForUpdatesAndNotify().catch(err => {
-    console.error("AutoUpdater error: ", err);
-  });
+  // Trigger auto update check but ONLY if packaged
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify().catch(err => {
+      console.error("AutoUpdater initial error: ", err);
+    });
+  }
 });
 
 app.on('before-quit', () => {
@@ -118,6 +120,7 @@ app.on('activate', () => {
 });
 
 ipcMain.handle('get-workspace', () => workspaceConfig);
+ipcMain.handle('get-app-version', () => app.getVersion());
 
 ipcMain.handle('window-minimize', (e) => {
   BrowserWindow.fromWebContents(e.sender)?.minimize();

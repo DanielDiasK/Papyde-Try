@@ -284,7 +284,7 @@ export default function App() {
         window.electronAPI?.saveStructure(items);
     }, []);
 
-    const createNewDocument = async () => {
+    const createNewDocument = useCallback(async () => {
         const newDoc: Document = {
             id: crypto.randomUUID(),
             title: '',
@@ -304,12 +304,12 @@ export default function App() {
             setDocuments(prev => [newDoc, ...prev]);
             setActiveDoc(newDoc);
         }
-    };
+    }, [sidebarItems, persistStructure]);
 
-    const createNewFolder = () => {
+    const createNewFolder = useCallback(() => {
         const folderItem: SidebarItem = { id: crypto.randomUUID(), type: 'folder', name: 'Nova Pasta', docId: undefined, parentId: null, order: Date.now(), isOpen: false };
         persistStructure([folderItem, ...sidebarItems]);
-    };
+    }, [sidebarItems, persistStructure]);
 
     const deleteItem = useCallback(async (sidebarId: string) => {
         setSidebarItems(prev => {
@@ -356,10 +356,6 @@ export default function App() {
         }, 1000);
     };
 
-    const filteredDocs = documents.filter(d =>
-        (d.title || '').toLowerCase().includes('') ||
-        (d.content || '').toLowerCase().includes('')
-    );
 
     const handleToggleFolder = useCallback((id: string) => {
         setSidebarItems(prev => {
@@ -404,6 +400,22 @@ export default function App() {
             }
         }
     };
+
+    const handleSearchClose = useCallback(() => setSearchOpen(false), []);
+    const handleSelectDoc = useCallback((docId: string) => {
+        const doc = documents.find(d => d.id === docId);
+        if (doc) setActiveDoc(doc);
+    }, [documents]);
+
+    const handleSettingsClose = useCallback(() => setSettingsOpen(false), []);
+    const handleSaveSettings = useCallback((s: AppSettings) => {
+        setAppSettings(s);
+        applyTheme(s.theme);
+        window.electronAPI?.saveSettings(s);
+    }, []);
+    const handleWorkspaceChange = useCallback((cfg: { name: string, path: string }) => {
+        setWorkspaceConfig(cfg);
+    }, []);
 
     if (loadingConfig) {
         return (
@@ -477,13 +489,10 @@ export default function App() {
             {searchOpen && (
                 <SearchModal
                     open={searchOpen}
-                    onClose={() => setSearchOpen(false)}
+                    onClose={handleSearchClose}
                     documents={documents}
                     sidebarItems={sidebarItems}
-                    onSelectDoc={(docId) => {
-                        const doc = documents.find(d => d.id === docId);
-                        if (doc) setActiveDoc(doc);
-                    }}
+                    onSelectDoc={handleSelectDoc}
                     onCreateDoc={createNewDocument}
                     onCreateFolder={createNewFolder}
                 />
@@ -491,18 +500,12 @@ export default function App() {
             {settingsOpen && (
                 <SettingsModal
                     open={settingsOpen}
-                    onClose={() => setSettingsOpen(false)}
+                    onClose={handleSettingsClose}
                     settings={appSettings}
                     workspacePath={workspaceConfig?.path ?? ''}
                     workspaceName={workspaceConfig?.name ?? ''}
-                    onSave={(s) => {
-                        setAppSettings(s);
-                        applyTheme(s.theme);
-                        window.electronAPI?.saveSettings(s);
-                    }}
-                    onWorkspaceChange={(cfg) => {
-                        setWorkspaceConfig(cfg);
-                    }}
+                    onSave={handleSaveSettings}
+                    onWorkspaceChange={handleWorkspaceChange}
                 />
             )}
             <div className="flex flex-1 overflow-hidden">

@@ -67,12 +67,18 @@ const SearchModal = React.memo(({ open, onClose, documents, sidebarItems, onSele
 
     const filteredDocs = React.useMemo(() => {
         if (!q) return [];
+        // Create a lookup map for faster access O(N) instead of O(N^2)
+        const docMap = new Map(documents.map(doc => [doc.id, doc]));
+        
         return docItems.filter(d => {
-            const doc = documents.find(x => x.id === d.docId);
-            return doc && (
-                (doc.title || '').toLowerCase().includes(q) ||
-                (doc.content || '').toLowerCase().includes(q)
-            );
+            const doc = d.docId ? docMap.get(d.docId) : null;
+            if (!doc) return false;
+
+            const titleMatch = (doc.title || '').toLowerCase().includes(q);
+            if (titleMatch) return true;
+
+            const contentMatch = (doc.content || '').toLowerCase().includes(q);
+            return contentMatch;
         });
     }, [q, docItems, documents]);
 
